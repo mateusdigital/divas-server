@@ -69,6 +69,9 @@ router.patch("/users/:username", getUser, async (req, res) => {
   if (req.body.description != null) {
     res.user.description = req.body.description;
   }
+  if (req.body.password != null) {
+    res.user.password = req.body.password;
+  }
 
   try {
     const updatedUser = await res.user.save();
@@ -76,7 +79,7 @@ router.patch("/users/:username", getUser, async (req, res) => {
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
-});
+  });
 
 // -----------------------------------------------------------------------------
 // Route: DELETE /users/:username - Delete a user by username
