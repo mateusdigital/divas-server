@@ -4,7 +4,7 @@
   "description": "Server for divas.fashion",
   "main": "main.js",
   "scripts": {
-    "dev": "node main.js",
+    "dev": "nodemon main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "mateus.digital <hello@mateus.digital>",
