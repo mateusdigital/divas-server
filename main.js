@@ -24,7 +24,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+
 require("dotenv").config();
+
+// -----------------------------------------------------------------------------
+const userRoutes = require("./routes/UserRoutes");
+
 
 
 // -----------------------------------------------------------------------------
@@ -56,14 +61,12 @@ db.once("open", () => {
 
 // -----------------------------------------------------------------------------
 // Routes
-app.get("/", (req, res) => {
-  res.send("Hello, world!");
-});
+app.use('/', userRoutes);
 
 
 // -----------------------------------------------------------------------------
 // Start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port  http://localhost:${PORT}`);
 });
