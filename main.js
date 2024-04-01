@@ -28,8 +28,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 // -----------------------------------------------------------------------------
-const userRoutes = require("./routes/UserRoutes");
-
+const userRoutes       = require("./routes/UserRoutes");
+const designItemRoutes = require("./routes/DesignItemRoutes");
 
 
 // -----------------------------------------------------------------------------
@@ -61,8 +61,8 @@ db.once("open", () => {
 
 // -----------------------------------------------------------------------------
 // Routes
-app.use('/', userRoutes);
-
+app.use("/", userRoutes);
+app.use("/", designItemRoutes);
 
 // -----------------------------------------------------------------------------
 // Start
