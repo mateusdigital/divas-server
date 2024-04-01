@@ -30,6 +30,7 @@ require("dotenv").config();
 // -----------------------------------------------------------------------------
 const userRoutes       = require("./routes/UserRoutes");
 const designItemRoutes = require("./routes/DesignItemRoutes");
+const likeRoutes       = require("./routes/LikeRoutes");
 
 
 // -----------------------------------------------------------------------------
@@ -63,6 +64,8 @@ db.once("open", () => {
 // Routes
 app.use("/", userRoutes);
 app.use("/", designItemRoutes);
+app.use("/", likeRoutes);
+
 
 // -----------------------------------------------------------------------------
 // Start

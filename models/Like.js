@@ -9,9 +9,9 @@
 //                 +                         +                                //
 //                      O      *        '       .                             //
 //                                                                            //
-//  File      : User.js                                                       //
+//  File      : Like.js                                                       //
 //  Project   : divas-server                                                  //
-//  Date      : 2024-03-25                                                    //
+//  Date      : 2024-04-01                                                    //
 //  License   : See project's COPYING.TXT for full info.                      //
 //  Author    : mateus.digital <hello@mateus.digital>                         //
 //  Copyright : mateus.digital - 2024                                         //
@@ -24,27 +24,16 @@
 const mongoose = require("mongoose");
 
 // -----------------------------------------------------------------------------
-const UserSchema = new mongoose.Schema({
+const LikeSchema = new mongoose.Schema({
+  // DB
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   // Info
-  fullname: { type: String, required: true },
-  description: String,
-
-  // Login
-  username: { type: String, required: true, unique: true },
-  email:    { type: String, required: true, unique: true },
-  password: { type: String, required: true },   // @XXX: Today this is plain string make it save... 2024-03-25
-
-  // Social
-  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  likes:      { type: Number, default: 0 },
-
-  // Design
-  designItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "DesignItem" }],
+  targetUser:       { type: mongoose.Schema.Types.ObjectId, ref: "User",       required: true },
+  targetDesignItem: { type: mongoose.Schema.Types.ObjectId, ref: "DesignItem", required: true },
 });
 
 // -----------------------------------------------------------------------------
-const User = mongoose.model("User", UserSchema);
+const Like = mongoose.model("Like", LikeSchema);
 
 // -----------------------------------------------------------------------------
-module.exports = User;
+module.exports = Like;
