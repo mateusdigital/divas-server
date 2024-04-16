@@ -26,8 +26,9 @@ const mongoose = require("mongoose");
 // -----------------------------------------------------------------------------
 const UserSchema = new mongoose.Schema({
   // Info
-  fullname: { type: String, required: true },
-  description: String,
+  fullname:        { type: String, required: true },
+  profilePhotoUrl: { type: String },
+  description:     { type: String },
 
   // Login
   username: { type: String, required: true, unique: true },

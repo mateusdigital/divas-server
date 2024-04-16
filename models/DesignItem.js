@@ -29,8 +29,16 @@ const designItemSchema = new mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
   // Info
+  title:       { type: String, required: true },
   description: { type: String, required: true },
-  imageUrl:    { type: String, required: true }
+  imageUrl:    { type: String, required: true },
+
+  // Stats
+  commentsCount: { type: Number, default: 0 },
+  likesCount:    { type: Number, default: 0 },
+
+  // Items
+  items: { type: mongoose.Schema.Types.ObjectId, ref: "Item", required: true },
 });
 
 // -----------------------------------------------------------------------------
