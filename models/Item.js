@@ -25,6 +25,7 @@ const mongoose = require("mongoose");
 
 // -----------------------------------------------------------------------------
 const ItemSchema = new mongoose.Schema({
+  imageUrl: { type: String, required: true },
   // Info
   category:  { type: String, required: true },
   color:     { type: String, required: true },
