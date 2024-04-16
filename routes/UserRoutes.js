@@ -25,6 +25,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const Debug = require("../helpers/Debug");
 
 
 // -----------------------------------------------------------------------------
@@ -52,14 +53,24 @@ router.get("/users", async (req, res) => {
 
 // -----------------------------------------------------------------------------
 // Route: GET /users/:username - Get a single user by username
-router.get("/users/:username", getUser, (req, res) => {
+router.get("/users/:username", getUserByUsername, (req, res) => {
+  res.json(res.user);
+});
+
+// -----------------------------------------------------------------------------
+// Route: GET /usersId/:username - Get a single user by id
+router.get("/usersId/:userId", getUserById, (req, res) => {
+  Debug.LogJson(res.user);
   res.json(res.user);
 });
 
 
 // -----------------------------------------------------------------------------
 // Route: PATCH /users/:username - Update a user by username
-router.patch("/users/:username", getUser, async (req, res) => {
+router.patch("/users/:username", getUserByUsername, async (req, res) => {
+  if (req.body.profilePhotoUrl != null) {
+    res.user.profilePhotoUrl = req.body.profilePhotoUrl;
+  }
   if (req.body.fullname != null) {
     res.user.fullname = req.body.fullname;
   }
@@ -83,7 +94,7 @@ router.patch("/users/:username", getUser, async (req, res) => {
 
 // -----------------------------------------------------------------------------
 // Route: DELETE /users/:username - Delete a user by username
-router.delete("/users/:username", getUser, async (req, res) => {
+router.delete("/users/:username", getUserByUsername, async (req, res) => {
   try {
     await res.user.remove();
     res.json({ message: "User deleted" });
@@ -92,9 +103,14 @@ router.delete("/users/:username", getUser, async (req, res) => {
   }
 });
 
+
+//
+// Middleware
+//
+
 // -----------------------------------------------------------------------------
-// Middleware to fetch a user by username
-async function getUser(req, res, next) {
+async function getUserByUsername(req, res, next)
+{
   let user;
 
   try {
@@ -109,6 +125,25 @@ async function getUser(req, res, next) {
   res.user = user;
   next();
 }
+
+// -----------------------------------------------------------------------------
+async function getUserById(req, res, next)
+{
+  let user;
+
+  try {
+    user = await User.findById(req.params.userId);
+    if (user == null) {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+
+  res.user = user;
+  next();
+}
+
 
 // -----------------------------------------------------------------------------
 module.exports = router;
