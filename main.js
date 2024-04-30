@@ -28,9 +28,9 @@ const cors = require("cors");
 require("dotenv").config();
 
 // -----------------------------------------------------------------------------
-const userRoutes       = require("./routes/UserRoutes");
-const designItemRoutes = require("./routes/DesignItemRoutes");
-const likeRoutes       = require("./routes/LikeRoutes");
+const userRoutes      = require("./routes/UserRoutes");
+const moodboardRoutes = require("./routes/MoodboardRoutes");
+const likeRoutes      = require("./routes/LikeRoutes");
 
 
 // -----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ db.once("open", () => {
 // -----------------------------------------------------------------------------
 // Routes
 app.use("/", userRoutes);
-app.use("/", designItemRoutes);
+app.use("/", moodboardRoutes);
 app.use("/", likeRoutes);
 
 

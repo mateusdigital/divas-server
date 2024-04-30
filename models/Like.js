@@ -26,10 +26,10 @@ const mongoose = require("mongoose");
 // -----------------------------------------------------------------------------
 const LikeSchema = new mongoose.Schema({
   // DB
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Who made the like
   // Info
-  targetUser:       { type: mongoose.Schema.Types.ObjectId, ref: "User",       required: true },
-  targetDesignItem: { type: mongoose.Schema.Types.ObjectId, ref: "DesignItem", required: true },
+  targetUser:      { type: mongoose.Schema.Types.ObjectId, ref: "User",      required: true }, // The person that was liked.
+  targetMoodboard: { type: mongoose.Schema.Types.ObjectId, ref: "Moodboard", required: true }, // The moodboard that was liked.
 });
 
 // -----------------------------------------------------------------------------

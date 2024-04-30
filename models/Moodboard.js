@@ -24,7 +24,7 @@
 const mongoose = require("mongoose");
 
 // -----------------------------------------------------------------------------
-const designItemSchema = new mongoose.Schema({
+const moodboardSchema = new mongoose.Schema({
   // DB
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
@@ -38,11 +38,12 @@ const designItemSchema = new mongoose.Schema({
   likesCount:    { type: Number, default: 0 },
 
   // Items
-  items: { type: mongoose.Schema.Types.ObjectId, ref: "Item", required: true },
+  items: { type: mongoose.Schema.Types.ObjectId, ref: "Item", },
+  // required: true },
 });
 
 // -----------------------------------------------------------------------------
-const DesignItem = mongoose.model("DesignItem", designItemSchema);
+const Moodboard = mongoose.model("Moodboard", moodboardSchema);
 
 // -----------------------------------------------------------------------------
-module.exports = DesignItem;
+module.exports = Moodboard;

@@ -26,22 +26,26 @@ const mongoose = require("mongoose");
 // -----------------------------------------------------------------------------
 const UserSchema = new mongoose.Schema({
   // Info
-  fullname:        { type: String, required: true },
-  profilePhotoUrl: { type: String },
-  description:     { type: String },
+  fullname:        { type: String, required: true }, // The fullname of this user.
+  description:     { type: String },                 // The description of this user.
+
+  // Photos
+  profilePhotoUrl: { type: String }, // The photo of this user.
 
   // Login
-  username: { type: String, required: true, unique: true },
-  email:    { type: String, required: true, unique: true },
-  password: { type: String, required: true },   // @XXX: Today this is plain string make it save... 2024-03-25
+  username: { type: String, required: true, unique: true }, // Username of this user.
+  email:    { type: String, required: true, unique: true }, // Email of this user.
+  password: { type: String, required: true },               // @XXX: Today this is plain string make it save... 2024-03-25
 
   // Social
-  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  likes:      { type: Number, default: 0 },
+  followers:  [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Other users that follow this user.
+  following:  [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Users that this user is following.
+  likesCount: { type: Number, default: 0 },                            // How much likes this user has.
 
-  // Design
-  designItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "DesignItem" }],
+  // Moodboards
+  moodboards: [{ type: mongoose.Schema.Types.ObjectId, ref: "Moodboard" }], // List of moodboard of this user.
+  collectionsCount: { type: Number, default: 0 },                           // How much collections this user has.
+
 });
 
 // -----------------------------------------------------------------------------
