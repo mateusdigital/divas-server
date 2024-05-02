@@ -38,7 +38,7 @@ const moodboardSchema = new mongoose.Schema({
   likesCount:    { type: Number, default: 0 },
 
   // Items
-  items: { type: mongoose.Schema.Types.ObjectId, ref: "Item", },
+  moodboardItems: { type: mongoose.Schema.Types.ObjectId, ref: "MoodboardItem", },
   // required: true },
 });
 
