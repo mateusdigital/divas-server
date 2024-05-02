@@ -1,0 +1,3 @@
+[submodule "divas-shared"]
+	path = divas-shared
+	url = git@github.com:mateusdigital/divas-shared

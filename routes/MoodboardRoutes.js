@@ -20,7 +20,6 @@
 //                                                                            //
 //---------------------------------------------------------------------------~//
 
-
 // -----------------------------------------------------------------------------
 const express = require("express");
 const router  = express.Router();
@@ -30,11 +29,12 @@ const Debug = require("../helpers/Debug");
 // -----------------------------------------------------------------------------
 const Moodboard = require("../models/Moodboard");
 const User      = require("../models/User");
-
+// -----------------------------------------------------------------------------
+const Endpoints = require("../divas-shared/shared/API/Endpoints");
 
 // -----------------------------------------------------------------------------
-// Route: POST - /moodboard - Create a new Moodboard
-router.post("/moodboard/", async (req, res)=>{
+// POST - Create a new Moodboard
+router.post(Endpoints.Moodboard.Create, async (req, res)=>{
   try {
     const moodboard = await Moodboard.create(req.body);
 
@@ -52,8 +52,8 @@ router.post("/moodboard/", async (req, res)=>{
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET - /moodboard - Get all design items
-router.get("/moodboard/", async (req, res) => {
+// GET - Get all moodboards
+router.get(Endpoints.Moodboard.GetAll, async (req, res) => {
   try {
     const moodboards = await Moodboard.find();
 
@@ -67,8 +67,8 @@ router.get("/moodboard/", async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET - /moodboard/:id - Get a specific moodboard by ID
-router.get("/moodboard/:id", async (req, res)=>{
+// GET - Get a specific moodboard by ID
+router.get(Endpoints.Moodboard.GetById, async (req, res)=>{
   try {
     const moodboard = await Moodboard.findById(req.params.id);
     if (!moodboard) {
@@ -84,8 +84,8 @@ router.get("/moodboard/:id", async (req, res)=>{
 });
 
 // -----------------------------------------------------------------------------
-// Route: Post /moodboard/ids/ - Get multiple moodboard by an array of IDs
-router.post("/moodboard/ids/", async (req, res) => {
+// POST - Get multiple moodboard by an array of IDs
+router.post(Endpoints.Moodboard.GetMultiple, async (req, res) => {
   try {
     const ids = req.body.ids;
     const moodboards = await Moodboard.find({ _id: { $in: ids } });

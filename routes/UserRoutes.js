@@ -28,11 +28,12 @@ const { StatusCodes } = require("http-status-codes");
 //
 const User  = require("../models/User");
 const Debug = require("../helpers/Debug");
-
+//
+const Endpoints = require("../divas-shared/shared/API/Endpoints");
 
 // -----------------------------------------------------------------------------
-// Route: POST /users - Create a new user
-router.post("/users", async (req, res)=>{
+// POST - Create a new user
+router.post(Endpoints.User.Create, async (req, res)=>{
   try {
     const new_user = new User(req.body);
     await new_user.save();
@@ -44,8 +45,8 @@ router.post("/users", async (req, res)=>{
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET - /users - Get all users
-router.get("/users", async (req, res)=>{
+// GET - Get all users
+router.get(Endpoints.User.GetAll, async (req, res)=>{
   try {
     const users = await User.find();
     res.json(users);
@@ -56,23 +57,23 @@ router.get("/users", async (req, res)=>{
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET - /user/:username - Get a single user by username
-router.get("/user/:username", _GetUserByUsername, (req, res)=>{
+// GET - Get a single user by username
+router.get(Endpoints.User.GetByUsername, _GetUserByUsername, (req, res)=>{
   Debug.LogJson(res.user);
   res.json(res.user);
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET - /users/:userId- Get a single user by id
-router.get("/users/:userId", _GetUserById, (req, res)=>{
+// GET - Get a single user by id
+router.get(Endpoints.User.GetById, _GetUserById, (req, res)=>{
   Debug.LogJson(res.user);
   res.json(res.user);
 });
 
 
 // -----------------------------------------------------------------------------
-// Route: PATCH - /users/:userId - Update a user by username
-router.patch("/users/:username", _GetUserById, async (req, res)=>{
+// PATCH - /users/:userId - Update a user by username
+router.patch(Endpoints.User.Update, _GetUserById, async (req, res)=>{
 
   if (req.body.profilePhotoUrl != null) {
     res.user.profilePhotoUrl = req.body.profilePhotoUrl;
@@ -91,7 +92,7 @@ router.patch("/users/:username", _GetUserById, async (req, res)=>{
   }
 
   try {
-    const updatedUser = await res.user.save();
+    const updated_user = await res.user.save();
     res.json(updatedUser);
   } catch (err) {
     debugger;
@@ -100,8 +101,8 @@ router.patch("/users/:username", _GetUserById, async (req, res)=>{
 });
 
 // -----------------------------------------------------------------------------
-// Route: DELETE - /users/:userId - Delete a user by userId
-router.delete("/users/:username", _GetUserById, async (req, res) => {
+// DELETE - /users/:userId - Delete a user by userId
+router.delete(Endpoints.User.Delete, _GetUserById, async (req, res) => {
   try {
     await res.user.remove();
     res.json({ message: "User deleted" });
