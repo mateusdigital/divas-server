@@ -21,16 +21,17 @@
 //---------------------------------------------------------------------------~//
 
 // -----------------------------------------------------------------------------
-const express = require("express");
+const express  = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
+const cors     = require("cors");
 
 require("dotenv").config();
 
 // -----------------------------------------------------------------------------
-const userRoutes      = require("./routes/UserRoutes");
-const moodboardRoutes = require("./routes/MoodboardRoutes");
-const likeRoutes      = require("./routes/LikeRoutes");
+const userRoutes          = require("./routes/UserRoutes");
+const moodboardRoutes     = require("./routes/MoodboardRoutes");
+const moodboardItemRoutes = require("./routes/MoodboardItemRoutes");
+const likeRoutes          = require("./routes/LikeRoutes");
 
 
 // -----------------------------------------------------------------------------
@@ -49,7 +50,6 @@ mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
 });
 
-
 const db = mongoose.connection;
 db.on("error",
   console.error.bind(console, "MongoDB connection error:")
@@ -64,6 +64,7 @@ db.once("open", () => {
 // Routes
 app.use("/", userRoutes);
 app.use("/", moodboardRoutes);
+app.use("/", moodboardItemRoutes);
 app.use("/", likeRoutes);
 
 
