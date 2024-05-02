@@ -24,50 +24,56 @@
 // -----------------------------------------------------------------------------
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const { StatusCodes } = require("http-status-codes");
+//
+const User  = require("../models/User");
 const Debug = require("../helpers/Debug");
 
 
 // -----------------------------------------------------------------------------
 // Route: POST /users - Create a new user
-router.post("/users", async (req, res) => {
+router.post("/users", async (req, res)=>{
   try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(201).json(newUser);
+    const new_user = new User(req.body);
+    await new_user.save();
+    res.status(StatusCodes.CREATED).json(new_user);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET /users - Get all users
-router.get("/users", async (req, res) => {
+// Route: GET - /users - Get all users
+router.get("/users", async (req, res)=>{
   try {
     const users = await User.find();
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET /users/:username - Get a single user by username
-router.get("/users/:username", getUserByUsername, (req, res) => {
+// Route: GET - /user/:username - Get a single user by username
+router.get("/user/:username", _GetUserByUsername, (req, res)=>{
+  Debug.LogJson(res.user);
   res.json(res.user);
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET /usersId/:username - Get a single user by id
-router.get("/usersId/:userId", getUserById, (req, res) => {
+// Route: GET - /users/:userId- Get a single user by id
+router.get("/users/:userId", _GetUserById, (req, res)=>{
   Debug.LogJson(res.user);
   res.json(res.user);
 });
 
 
 // -----------------------------------------------------------------------------
-// Route: PATCH /users/:username - Update a user by username
-router.patch("/users/:username", getUserByUsername, async (req, res) => {
+// Route: PATCH - /users/:userId - Update a user by username
+router.patch("/users/:username", _GetUserById, async (req, res)=>{
+
   if (req.body.profilePhotoUrl != null) {
     res.user.profilePhotoUrl = req.body.profilePhotoUrl;
   }
@@ -88,18 +94,20 @@ router.patch("/users/:username", getUserByUsername, async (req, res) => {
     const updatedUser = await res.user.save();
     res.json(updatedUser);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
-  });
+});
 
 // -----------------------------------------------------------------------------
-// Route: DELETE /users/:username - Delete a user by username
-router.delete("/users/:username", getUserByUsername, async (req, res) => {
+// Route: DELETE - /users/:userId - Delete a user by userId
+router.delete("/users/:username", _GetUserByUserId, async (req, res) => {
   try {
     await res.user.remove();
     res.json({ message: "User deleted" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 });
 
@@ -109,17 +117,18 @@ router.delete("/users/:username", getUserByUsername, async (req, res) => {
 //
 
 // -----------------------------------------------------------------------------
-async function getUserByUsername(req, res, next)
+async function _GetUserByUsername(req, res, next)
 {
   let user;
 
   try {
     user = await User.findOne({ username: req.params.username });
     if (user == null) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
     }
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    debugger;
+    return res.status(Status.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 
   res.user = user;
@@ -127,17 +136,18 @@ async function getUserByUsername(req, res, next)
 }
 
 // -----------------------------------------------------------------------------
-async function getUserById(req, res, next)
+async function _GetUserById(req, res, next)
 {
   let user;
 
   try {
     user = await User.findById(req.params.userId);
     if (user == null) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
     }
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    debugger;
+    return res.status(Status.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 
   res.user = user;

@@ -23,35 +23,36 @@
 
 // -----------------------------------------------------------------------------
 const express = require("express");
-const router = express.Router();
+const router  = express.Router();
+const { StatusCodes } = require("http-status-codes");
 // -----------------------------------------------------------------------------
 const Debug = require("../helpers/Debug");
 // -----------------------------------------------------------------------------
 const Moodboard = require("../models/Moodboard");
-const User       = require("../models/User");
+const User      = require("../models/User");
 
 
 // -----------------------------------------------------------------------------
-// Route: POST /moodboard - Create a new Moodboard
-router.post("/moodboard/", async (req, res) => {
+// Route: POST - /moodboard - Create a new Moodboard
+router.post("/moodboard/", async (req, res)=>{
   try {
     const moodboard = await Moodboard.create(req.body);
 
-    // Update the corresponding user document to include the new design item.
     await User.findByIdAndUpdate(
       moodboard.owner,
       { $push: { moodboards: moodboard._id } },
       { new: true }
     );
 
-    res.status(201).json(moodboard);
+    res.status(StatusCodes.CREATED).json(moodboard);
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET /moodboard - Get all design items
+// Route: GET - /moodboard - Get all design items
 router.get("/moodboard/", async (req, res) => {
   try {
     const moodboards = await Moodboard.find();
@@ -60,39 +61,41 @@ router.get("/moodboard/", async (req, res) => {
 
     res.json(moodboards);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 });
 
 // -----------------------------------------------------------------------------
-// Route: GET /moodboard:id - Get a specific design item by ID
-router.get("/moodboard/:id", async (req, res) => {
+// Route: GET - /moodboard/:id - Get a specific moodboard by ID
+router.get("/moodboard/:id", async (req, res)=>{
   try {
     const moodboard = await Moodboard.findById(req.params.id);
     if (!moodboard) {
-      return res.status(404).json({ message: "Design item not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Moodboard not found" });
     }
 
     Debug.LogJson(moodboard);
-
     res.json(moodboard);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 });
 
 // -----------------------------------------------------------------------------
-// Route: POST /moodboard/getByIds - Get design items by an array of IDs
-router.post("/moodboard/getByIds", async (req, res) => {
+// Route: Post /moodboard/ids/ - Get multiple moodboard by an array of IDs
+router.post("/moodboard/ids/", async (req, res) => {
   try {
-    const ids = req.body.ids; // Assuming the IDs are passed in the request body
+    const ids = req.body.ids;
     const moodboards = await Moodboard.find({ _id: { $in: ids } });
 
     Debug.LogJson(moodboards);
 
     res.json(moodboards);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: error.message });
   }
 });
 
