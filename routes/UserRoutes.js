@@ -101,7 +101,7 @@ router.patch("/users/:username", _GetUserById, async (req, res)=>{
 
 // -----------------------------------------------------------------------------
 // Route: DELETE - /users/:userId - Delete a user by userId
-router.delete("/users/:username", _GetUserByUserId, async (req, res) => {
+router.delete("/users/:username", _GetUserById, async (req, res) => {
   try {
     await res.user.remove();
     res.json({ message: "User deleted" });
