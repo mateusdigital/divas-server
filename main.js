@@ -32,16 +32,20 @@ const userRoutes          = require("./routes/UserRoutes");
 const moodboardRoutes     = require("./routes/MoodboardRoutes");
 const moodboardItemRoutes = require("./routes/MoodboardItemRoutes");
 const likeRoutes          = require("./routes/LikeRoutes");
+const uploadRoutes        = require("./routes/UploadRoutes");
 
 
 // -----------------------------------------------------------------------------
 // Express
 const app = express();
 
+app.use(express.json      ({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
 // -----------------------------------------------------------------------------
 // Middleware
 app.use(cors());
-app.use(express.json()); // Parse JSON request bodies
+app.use(express.json());
 
 // -----------------------------------------------------------------------------
 // Database
@@ -66,6 +70,7 @@ app.use("/", userRoutes);
 app.use("/", moodboardRoutes);
 app.use("/", moodboardItemRoutes);
 app.use("/", likeRoutes);
+app.use("/", uploadRoutes);
 
 
 // -----------------------------------------------------------------------------
