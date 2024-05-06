@@ -1,3 +1,24 @@
+//----------------------------------------------------------------------------//
+//                               *       +                                    //
+//                         '                  |                               //
+//                     ()    .-.,="``"=.    - o -                             //
+//                           '=/_       \     |                               //
+//                        *   |  '=._    |                                    //
+//                             \     `=./`,        '                          //
+//                          .   '=.__.=' `='      *                           //
+//                 +                         +                                //
+//                      O      *        '       .                             //
+//                                                                            //
+//  File      : process-clothes-data.js                                       //
+//  Project   : divas-server                                                  //
+//  Date      : 2024-05-02                                                    //
+//  License   : See project's COPYING.TXT for full info.                      //
+//  Author    : mateus.digital <hello@mateus.digital>                         //
+//  Copyright : mateus.digital - 2024                                         //
+//                                                                            //
+//  Description :                                                             //
+//                                                                            //
+//----------------------------------------------------------------------------//
 
 //
 //   Imports
@@ -13,8 +34,6 @@ const path = require("path");
 
 // -----------------------------------------------------------------------------
 const NAME_MAPPING = {
-
-
   "acessórios"       : "accessories",
   "anéis"            : "rings",
   "artefatos"        : "artifacts",
@@ -34,7 +53,6 @@ const NAME_MAPPING = {
   "desenhos"         : "designs",
   "diversos"         : "several",
   "fotos"            : "Photos",
-  "fotoselementos"   : "photoelements",
   "Homens"           : "Men",
   "jaquetas"         : "jackets",
   "jeans"            : "jeans",
@@ -74,6 +92,9 @@ const COLOR_MAPPING = {
   "vermelho"         : "red",
 }
 
+/// "fotoselementos"   : "photoelements",
+// @TODO: this isnt part of the clothes
+
 const DATA_DIR_PATH    = "_data/Clube_Divas_Roupas";
 const REMOTE_SERVER    = "mateus@mateus.digital";
 const REMOTE_BASE_PATH = "/home/mateus/mateus.digital/html/divas/data";
@@ -96,7 +117,7 @@ function map_components(components)
     subcategory1: null,
     subcategory2: null,
     color: null,
-    item: null,
+    filename: null,
 
     target_path: null,
     source_path: null
@@ -131,12 +152,11 @@ function map_components(components)
         debugger;
       }
 
-      item_model.item = component;
+      item_model.filename = component;
       mapped.push(component);
     }
   }
 
-  item_model.target_path = mapped.join("/");
   return item_model;
 }
 
@@ -169,22 +189,75 @@ function process_directory(fullpath)
 }
 
 // -----------------------------------------------------------------------------
-function write_sync_script_file(items)
+function is_alpha(character)
 {
-  const fd = fs.openSync(SYNC_SCRIPT_PATH, "w")
-  for(let i = 0; i < items.length; ++i) {
-    console.log(`Writing sync string: ${i} of ${items.length}`);
-    const item = items[i];
+  return /^[a-zA-Z0-9]+$/.test(character);
+}
 
-    const log_str  = `echo Syncing: ${i} of ${items.length} - ${item.target_path}\n`;
-    const sync_str = `rsync -pr --verbose --mkpath "${item.source_path}" ${REMOTE_SERVER}:${REMOTE_BASE_PATH}/${item.target_path}\n`;
-
-    fs.writeSync(fd, log_str);
-    fs.writeSync(fd, sync_str);
+function path_join(base, ...args)
+{
+  let p = `${base}`;
+  for(let i = 0; i < args.length; ++i) {
+    p = `${p}/${args[i]}`;
   }
 
-  fs.closeSync(fd);
+  return p;
 }
+
+// -----------------------------------------------------------------------------
+function normalize_filenames(items)
+{
+  for(let i = 0; i < items.length; ++i) {
+    const item = items[i];
+
+    let filename  = item.filename.toLowerCase();
+    let extension = path.extname(filename);
+
+    filename = filename.replace(extension, ""); // Remove the extension
+    let clean_filename = [];
+
+    for(let j = 0; j < filename.length; ++j) {
+      const c = filename[j];
+      if(is_alpha(c) || c == "_") {
+        clean_filename.push(c);
+      } else {
+        clean_filename.push("_");
+      }
+    }
+
+    clean_filename = clean_filename.join("");
+
+    item.filename    = `${clean_filename}${extension.toLowerCase()}`;
+    item.target_path = item.category;
+    if(item.subcategory1) {
+      item.target_path = path_join(item.target_path, item.subcategory1);
+    }
+    if(item.subcategory2) {
+      item.target_path = path_join(item.target_path, item.subcategory2);
+    }
+    if(item.color) {
+      item.target_path = path_join(item.target_path, item.color);
+    }
+    item.target_path = path_join(item.target_path, item.filename)
+  }
+}
+
+
+// -----------------------------------------------------------------------------
+function copy_items_local(items)
+{
+  for(let i = 0; i < items.length; ++i)  {
+    console.log(`Copying files locally: ${i} of ${items.length}`);
+    const item = items[i];
+    const src = item.source_path;
+    const dst = item.target_path;
+
+    const dst_dir  = `./data/${path.dirname(dst)}`;
+    fs.mkdirSync(dst_dir, { recursive: true});
+    fs.copyFileSync(src, `${dst_dir}/${item.filename}`);
+  }
+}
+
 
 // -----------------------------------------------------------------------------
 function write_items_json_file(items)
@@ -196,12 +269,14 @@ function write_items_json_file(items)
   fs.closeSync(fd);
 }
 
+
 //
 // Script
 //
 
 // -----------------------------------------------------------------------------
-process_directory(DATA_DIR_PATH);
-
+process_directory     (DATA_DIR_PATH);
+normalize_filenames   (ALL_CLOTHES_ITEMS)
+copy_items_local      (ALL_CLOTHES_ITEMS);
 write_sync_script_file(ALL_CLOTHES_ITEMS);
 write_items_json_file (ALL_CLOTHES_ITEMS);
