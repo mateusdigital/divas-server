@@ -39,7 +39,6 @@ router.post(Endpoints.User.Create, async (req, res)=>{
     await new_user.save();
     res.status(StatusCodes.CREATED).json(new_user);
   } catch (err) {
-    debugger;
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
 });
@@ -72,7 +71,7 @@ router.get(Endpoints.User.GetById, _GetUserById, (req, res)=>{
 
 
 // -----------------------------------------------------------------------------
-// PATCH - /users/:userId - Update a user by username
+// PATCH - Update a user by username
 router.patch(Endpoints.User.Update, _GetUserById, async (req, res)=>{
 
   if (req.body.profilePhotoUrl != null) {
@@ -101,7 +100,7 @@ router.patch(Endpoints.User.Update, _GetUserById, async (req, res)=>{
 });
 
 // -----------------------------------------------------------------------------
-// DELETE - /users/:userId - Delete a user by userId
+// DELETE - Delete a user by userId
 router.delete(Endpoints.User.Delete, _GetUserById, async (req, res) => {
   try {
     await res.user.remove();
@@ -112,6 +111,26 @@ router.delete(Endpoints.User.Delete, _GetUserById, async (req, res) => {
   }
 });
 
+
+// -----------------------------------------------------------------------------
+// LOGIN /
+router.post(Endpoints.User.Login, async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.body.username });
+    if (user == null) {
+      res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+    }
+    else if(user.password == req.body.password) {
+      Debug.LogJson(user);
+      res.json(user);
+    } else {
+      res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid Credentials" });
+    }
+  } catch (err) {
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+  }
+});
 
 //
 // Middleware
