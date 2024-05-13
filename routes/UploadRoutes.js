@@ -24,7 +24,7 @@ function _GetUploadDir()
 
 
 // -----------------------------------------------------------------------------
-// POST - Create a new user
+// POST - Upload new ProfilePhoto
 router.post(Endpoints.User.UploadProfilePhoto, async (req, res)=>{
   const form = new formidable.IncomingForm();
   form.parse(req, async (err, fields, files) => {
