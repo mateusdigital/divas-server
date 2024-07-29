@@ -20,6 +20,8 @@
 //                                                                            //
 //----------------------------------------------------------------------------//
 
+
+// -----------------------------------------------------------------------------
 class PathUtils
 {
   /** Same as the path.join but always with Unix path separators */
@@ -33,6 +35,7 @@ class PathUtils
     return p;
   }
 
+  // ---------------------------------------------------------------------------
   // @XXX: Improve the thing....
   static CreateUniqueFilename(extension)
   {

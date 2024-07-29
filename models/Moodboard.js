@@ -31,14 +31,14 @@ const moodboardSchema = new mongoose.Schema({
   // Info
   title:       { type: String, required: true },
   description: { type: String, required: true },
-  imageUrl:    { type: String, required: true },
+  photoUrl:    { type: String, required: true },
 
   // Stats
   commentsCount: { type: Number, default: 0 },
   likesCount:    { type: Number, default: 0 },
 
   // Items
-  moodboardItems: { type: mongoose.Schema.Types.ObjectId, ref: "MoodboardItem", },
+  moodboardItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "MoodboardItem", }],
   // required: true },
 });
 

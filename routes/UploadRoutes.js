@@ -13,6 +13,7 @@ const Endpoints = require("../divas-shared/shared/API/Endpoints");
 
 // -----------------------------------------------------------------------------
 const _USERS_UPLOAD_PATH = PathUtils.Join("upload", "users");
+const _MOODBOARD_UPLOAD_PATH = PathUtils.Join("upload", "moodboard");
 
 // -----------------------------------------------------------------------------
 /// @XXX: Find a place to save the photo.
@@ -22,6 +23,40 @@ function _GetUploadDir()
   return upload_path;
 }
 
+// -----------------------------------------------------------------------------
+// POST - Upload new MoodboardPhoto
+router.post(Endpoints.Moodboard.UploadMoodboardPhoto, async (req, res)=>{
+  const form = new formidable.IncomingForm();
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Failed to process form data" });
+    }
+
+    // Get the Upload dir.
+    const base_upload_dir = _GetUploadDir();
+    const upload_dir      = PathUtils.Join(base_upload_dir, _MOODBOARD_UPLOAD_PATH);
+
+    FSUtils.EnsureDirectory(upload_dir);
+
+    // Copy the file
+    const temp_path       = files.photo[0].filepath;
+    const temp_extension  = path.extname(files.photo[0].originalFilename);
+
+    const unique_filename = PathUtils.CreateUniqueFilename(temp_extension);
+    const save_path       = PathUtils.Join(upload_dir, unique_filename);
+    const return_path     = PathUtils.Join(_MOODBOARD_UPLOAD_PATH, unique_filename);
+
+    fs.renameSync(temp_path, save_path);
+
+    res.status(StatusCodes.CREATED).json({
+      success: true,
+      photoPath: return_path
+    });
+  });
+});
+
 
 // -----------------------------------------------------------------------------
 // POST - Upload new ProfilePhoto
@@ -29,7 +64,9 @@ router.post(Endpoints.User.UploadProfilePhoto, async (req, res)=>{
   const form = new formidable.IncomingForm();
   form.parse(req, async (err, fields, files) => {
     if (err) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Failed to process form data" });
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ message: "Failed to process form data" });
     }
 
     // Get the Upload dir.
@@ -39,8 +76,10 @@ router.post(Endpoints.User.UploadProfilePhoto, async (req, res)=>{
     FSUtils.EnsureDirectory(upload_dir);
 
     // Copy the file
-    const temp_path       = files.profilePhoto[0].filepath;
-    const temp_extension  = path.extname(files.profilePhoto[0].originalFilename) ;
+    const photo = files.photo[0];
+
+    const temp_path       = photo.filepath;
+    const temp_extension  = path.extname(photo.originalFilename) ;
 
     const unique_filename = PathUtils.CreateUniqueFilename(temp_extension);
     const save_path       = PathUtils.Join(upload_dir, unique_filename);
@@ -50,7 +89,7 @@ router.post(Endpoints.User.UploadProfilePhoto, async (req, res)=>{
 
     res.status(StatusCodes.CREATED).json({
       success: true,
-      profilePhotoPath: return_path
+      photoPath: return_path
     });
   });
 });

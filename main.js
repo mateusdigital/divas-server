@@ -21,6 +21,8 @@
 //---------------------------------------------------------------------------~//
 
 // -----------------------------------------------------------------------------
+const path     = require("path");
+// -----------------------------------------------------------------------------
 const express  = require("express");
 const mongoose = require("mongoose");
 const cors     = require("cors");
@@ -39,8 +41,8 @@ const uploadRoutes        = require("./routes/UploadRoutes");
 // Express
 const app = express();
 
-app.use(express.json      ({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.json({limit: "50mb"}));
+app.use(express.urlencoded({limit: "50mb", extended: true}));
 
 // -----------------------------------------------------------------------------
 // Middleware
@@ -50,12 +52,13 @@ app.use(express.json());
 // -----------------------------------------------------------------------------
 // Database
 mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
+  useNewUrlParser:    true,
   useUnifiedTopology: true,
 });
 
 const db = mongoose.connection;
-db.on("error",
+db.on(
+  "error",
   console.error.bind(console, "MongoDB connection error:")
 );
 
@@ -71,7 +74,8 @@ app.use("/", moodboardRoutes);
 app.use("/", moodboardItemRoutes);
 app.use("/", likeRoutes);
 app.use("/", uploadRoutes);
-
+app.use("/data", express.static(path.join(__dirname, "data")));
+app.use("/upload", express.static(path.join(__dirname, "upload")));
 
 // -----------------------------------------------------------------------------
 // Start

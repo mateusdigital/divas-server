@@ -95,12 +95,8 @@ const COLOR_MAPPING = {
 /// "fotoselementos"   : "photoelements",
 // @TODO: this isnt part of the clothes
 
-const DATA_DIR_PATH    = "_data/Clube_Divas_Roupas";
-const REMOTE_SERVER    = "mateus@mateus.digital";
-const REMOTE_BASE_PATH = "/home/mateus/mateus.digital/html/divas/data";
-
-const SYNC_SCRIPT_PATH = "_data/sync.sh";
-const DATA_JSON_PATH   = "_data/items.json";
+const DATA_DIR_PATH  = "_data/Clube_Divas_Roupas";
+const DATA_JSON_PATH = "_data/items.json";
 
 const ALL_CLOTHES_ITEMS = [];
 

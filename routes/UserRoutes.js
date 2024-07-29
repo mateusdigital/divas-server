@@ -113,7 +113,7 @@ router.delete(Endpoints.User.Delete, _GetUserById, async (req, res) => {
 
 
 // -----------------------------------------------------------------------------
-// LOGIN /
+// LOGIN
 router.post(Endpoints.User.Login, async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });

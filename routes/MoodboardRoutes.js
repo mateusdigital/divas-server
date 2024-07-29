@@ -36,7 +36,20 @@ const Endpoints = require("../divas-shared/shared/API/Endpoints");
 // POST - Create a new Moodboard
 router.post(Endpoints.Moodboard.Create, async (req, res)=>{
   try {
-    const moodboard = await Moodboard.create(req.body);
+    const { info, items, photoUrl, user } = req.body;
+
+    const moodboard_items = [];
+    for(var item of items) {
+      moodboard_items.push(item.model);
+    }
+
+    const moodboard = await Moodboard.create({
+      owner: user._id,
+      title: info.title,
+      description: info.description,
+      photoUrl: photoUrl,
+      moodboardItems: moodboard_items,
+    });
 
     await User.findByIdAndUpdate(
       moodboard.owner,
