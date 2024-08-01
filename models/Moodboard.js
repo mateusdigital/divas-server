@@ -29,9 +29,10 @@ const moodboardSchema = new mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
   // Info
-  title:       { type: String, required: true },
-  description: { type: String, required: true },
-  photoUrl:    { type: String, required: true },
+  title:       { type: String  },
+  description: { type: String  },
+  photoUrl:    { type: String  },
+  isDraft:     { type: Boolean },
 
   // Stats
   commentsCount: { type: Number, default: 0 },

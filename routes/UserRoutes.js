@@ -22,49 +22,51 @@
 
 
 // -----------------------------------------------------------------------------
-const express = require("express");
-const router = express.Router();
-const { StatusCodes } = require("http-status-codes");
-//
-const User  = require("../models/User");
-const Debug = require("../helpers/Debug");
-//
-const Endpoints = require("../divas-shared/shared/API/Endpoints");
+const express       = require("express");
+const router        = express.Router();
+const {StatusCodes} = require("http-status-codes");
+// -----------------------------------------------------------------------------
+const User          = require("../models/User");
+const Debug         = require("../helpers/Debug");
+// -----------------------------------------------------------------------------
+const Endpoints     = require("../divas-shared/shared/API/Endpoints");
 
 // -----------------------------------------------------------------------------
 // POST - Create a new user
-router.post(Endpoints.User.Create, async (req, res)=>{
+router.post(Endpoints.User.Create, async (req, res) => {
   try {
     const new_user = new User(req.body);
     await new_user.save();
     res.status(StatusCodes.CREATED).json(new_user);
-  } catch (err) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+  }
+  catch (err) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
 // -----------------------------------------------------------------------------
 // GET - Get all users
-router.get(Endpoints.User.GetAll, async (req, res)=>{
+router.get(Endpoints.User.GetAll, async (req, res) => {
   try {
     const users = await User.find();
     res.json(users);
-  } catch (err) {
+  }
+  catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
 // -----------------------------------------------------------------------------
 // GET - Get a single user by username
-router.get(Endpoints.User.GetByUsername, _GetUserByUsername, (req, res)=>{
+router.get(Endpoints.User.GetByUsername, _GetUserByUsername, (req, res) => {
   Debug.LogJson(res.user);
   res.json(res.user);
 });
 
 // -----------------------------------------------------------------------------
 // GET - Get a single user by id
-router.get(Endpoints.User.GetById, _GetUserById, (req, res)=>{
+router.get(Endpoints.User.GetById, _GetUserById, (req, res) => {
   Debug.LogJson(res.user);
   res.json(res.user);
 });
@@ -72,8 +74,8 @@ router.get(Endpoints.User.GetById, _GetUserById, (req, res)=>{
 
 // -----------------------------------------------------------------------------
 // PATCH - Update a user by username
-router.patch(Endpoints.User.Update, _GetUserById, async (req, res)=>{
-
+router.patch(Endpoints.User.Update, _GetUserById, async (req, res) => {
+  
   if (req.body.profilePhotoUrl != null) {
     res.user.profilePhotoUrl = req.body.profilePhotoUrl;
   }
@@ -89,13 +91,14 @@ router.patch(Endpoints.User.Update, _GetUserById, async (req, res)=>{
   if (req.body.password != null) {
     res.user.password = req.body.password;
   }
-
+  
   try {
     const updated_user = await res.user.save();
     res.json(updatedUser);
-  } catch (err) {
+  }
+  catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
@@ -104,10 +107,11 @@ router.patch(Endpoints.User.Update, _GetUserById, async (req, res)=>{
 router.delete(Endpoints.User.Delete, _GetUserById, async (req, res) => {
   try {
     await res.user.remove();
-    res.json({ message: "User deleted" });
-  } catch (err) {
+    res.json({message: "User deleted"});
+  }
+  catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
@@ -116,19 +120,21 @@ router.delete(Endpoints.User.Delete, _GetUserById, async (req, res) => {
 // LOGIN
 router.post(Endpoints.User.Login, async (req, res) => {
   try {
-    const user = await User.findOne({ username: req.body.username });
+    const user = await User.findOne({username: req.body.username});
     if (user == null) {
-      res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+      res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
     }
-    else if(user.password == req.body.password) {
+    else if (user.password == req.body.password) {
       Debug.LogJson(user);
       res.json(user);
-    } else {
-      res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid Credentials" });
     }
-  } catch (err) {
+    else {
+      res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid Credentials"});
+    }
+  }
+  catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: err.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
@@ -140,17 +146,18 @@ router.post(Endpoints.User.Login, async (req, res) => {
 async function _GetUserByUsername(req, res, next)
 {
   let user;
-
+  
   try {
-    user = await User.findOne({ username: req.params.username });
+    user = await User.findOne({username: req.params.username});
     if (user == null) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
     }
-  } catch (err) {
-    debugger;
-    return res.status(Status.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
-
+  catch (err) {
+    debugger;
+    return res.status(Status.INTERNAL_SERVER_ERROR).json({message: err.message});
+  }
+  
   res.user = user;
   next();
 }
@@ -159,17 +166,18 @@ async function _GetUserByUsername(req, res, next)
 async function _GetUserById(req, res, next)
 {
   let user;
-
+  
   try {
     user = await User.findById(req.params.userId);
     if (user == null) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
     }
-  } catch (err) {
-    debugger;
-    return res.status(Status.INTERNAL_SERVER_ERROR).json({ message: err.message });
   }
-
+  catch (err) {
+    debugger;
+    return res.status(Status.INTERNAL_SERVER_ERROR).json({message: err.message});
+  }
+  
   res.user = user;
   next();
 }
