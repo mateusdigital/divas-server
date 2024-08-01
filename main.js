@@ -30,11 +30,12 @@ const cors     = require("cors");
 require("dotenv").config();
 
 // -----------------------------------------------------------------------------
-const userRoutes          = require("./routes/UserRoutes");
-const moodboardRoutes     = require("./routes/MoodboardRoutes");
-const moodboardItemRoutes = require("./routes/MoodboardItemRoutes");
-const likeRoutes          = require("./routes/LikeRoutes");
-const uploadRoutes        = require("./routes/UploadRoutes");
+const userRoutes             = require("./routes/UserRoutes");
+const moodboardRoutes        = require("./routes/MoodboardRoutes");
+const moodboardItemRoutes    = require("./routes/MoodboardItemRoutes");
+const moodboardCommentRoutes = require("./routes/MoodboardCommentRoutes");
+const likeRoutes             = require("./routes/LikeRoutes");
+const uploadRoutes           = require("./routes/UploadRoutes");
 
 
 // -----------------------------------------------------------------------------
@@ -72,6 +73,7 @@ db.once("open", () => {
 app.use("/", userRoutes);
 app.use("/", moodboardRoutes);
 app.use("/", moodboardItemRoutes);
+app.use("/", moodboardCommentRoutes);
 app.use("/", likeRoutes);
 app.use("/", uploadRoutes);
 app.use("/data", express.static(path.join(__dirname, "data")));

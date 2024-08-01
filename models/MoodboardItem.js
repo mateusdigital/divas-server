@@ -33,6 +33,8 @@ const MoodboardItemSchema = new mongoose.Schema({
   subcategory1: { type: String },
   subcategory2: { type: String },
   color:        { type: String },
+
+  commentsCount: { type: Number },
 });
 
 // -----------------------------------------------------------------------------
