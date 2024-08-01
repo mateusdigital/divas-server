@@ -34,7 +34,7 @@ const userRoutes             = require("./routes/UserRoutes");
 const moodboardRoutes        = require("./routes/MoodboardRoutes");
 const moodboardItemRoutes    = require("./routes/MoodboardItemRoutes");
 const moodboardCommentRoutes = require("./routes/MoodboardCommentRoutes");
-const likeRoutes             = require("./routes/LikeRoutes");
+const likeRoutes             = require("./routes/MoodboardLikeRoutes");
 const uploadRoutes           = require("./routes/UploadRoutes");
 
 

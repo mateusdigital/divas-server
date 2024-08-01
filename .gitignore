@@ -3,6 +3,8 @@
 
 _data/
 data/
+.idea/
+upload/
 
 ### Node ###
 # Logs
