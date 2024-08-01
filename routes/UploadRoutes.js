@@ -50,7 +50,7 @@ router.post(Endpoints.Moodboard.UploadMoodboardPhoto, async (req, res)=>{
 
     fs.renameSync(temp_path, save_path);
 
-    res.status(StatusCodes.CREATED).json({
+    return res.status(StatusCodes.CREATED).json({
       success: true,
       photoPath: return_path
     });
@@ -87,7 +87,7 @@ router.post(Endpoints.User.UploadProfilePhoto, async (req, res)=>{
 
     fs.renameSync(temp_path, save_path);
 
-    res.status(StatusCodes.CREATED).json({
+    return res.status(StatusCodes.CREATED).json({
       success: true,
       photoPath: return_path
     });

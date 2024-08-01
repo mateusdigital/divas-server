@@ -28,6 +28,7 @@ const {StatusCodes} = require("http-status-codes");
 const Debug         = require("../helpers/Debug");
 // -----------------------------------------------------------------------------
 const Moodboard     = require("../models/Moodboard");
+const MoodboardLike = require("../models/MoodboardLike");
 const User          = require("../models/User");
 // -----------------------------------------------------------------------------
 const Endpoints     = require("../divas-shared/shared/API/Endpoints");
@@ -44,12 +45,12 @@ router.post(Endpoints.Moodboard.Create, async (req, res) => {
     }
 
     if(!info || info.title.length == 0) {
-      res
+      return res
         .status(StatusCodes.BAD_REQUEST)
         .json({message: "Title can't be empty"})
     }
     if(!info || info.description.length == 0) {
-      res
+      return res
         .status(StatusCodes.BAD_REQUEST)
         .json({message: "Description can't be empty"})
     }
@@ -69,12 +70,12 @@ router.post(Endpoints.Moodboard.Create, async (req, res) => {
       {new: true}
     );
 
-    res
+    return res
       .status(StatusCodes.CREATED)
       .json(moodboard);
   }
   catch (error) {
-    res
+    return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({message: error.message});
   }
@@ -121,12 +122,12 @@ router.post(Endpoints.Moodboard.SaveDraft, async (req, res) => {
       {new: true}
     );
 
-    res
+    return res
       .status(StatusCodes.CREATED)
       .json(moodboard);
   }
   catch (error) {
-    res
+    return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({message: error.message});
   }
@@ -142,13 +143,36 @@ router.get(Endpoints.Moodboard.GetAll, async (req, res) => {
 
     Debug.LogJson(moodboards);
 
-    res.json(moodboards);
+    return res.json(moodboards);
   }
   catch (error) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
   }
 });
+// -----------------------------------------------------------------------------
+router.get(Endpoints.Moodboard.GetLikedByUser, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const owner = await User.findById(userId);
+    if(!owner) {
+      return res.status(StatusCodes.BAD_REQUEST, `Invalid user with ${userId}`);
+      return;
+    }
+
+
+    const moodboards = await MoodboardLike.find({owner})
+    Debug.LogJson(moodboards);
+
+    return res.json(moodboards);
+  }
+  catch (error) {
+    debugger;
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
+  }
+});
+
 
 // -----------------------------------------------------------------------------
 // GET - Get a specific moodboard by ID
@@ -156,7 +180,7 @@ router.get(Endpoints.Moodboard.GetById, async (req, res) => {
   try {
     const moodboard = await Moodboard.findById(req.params.id);
     if (!moodboard) {
-      res
+      return res
         .status(StatusCodes.NOT_FOUND)
         .json({message: "Moodboard not found"});
 
@@ -164,11 +188,11 @@ router.get(Endpoints.Moodboard.GetById, async (req, res) => {
     }
 
     Debug.LogJson(moodboard);
-    res.json(moodboard);
+    return res.json(moodboard);
   }
   catch (error) {
     debugger;
-    res
+    return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({message: error.message});
   }
@@ -183,11 +207,11 @@ router.post(Endpoints.Moodboard.GetMultiple, async (req, res) => {
 
     Debug.LogJson(moodboards);
 
-    res.json(moodboards);
+    return res.json(moodboards);
   }
   catch (error) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
   }
 });
 

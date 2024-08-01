@@ -37,10 +37,10 @@ router.post(Endpoints.User.Create, async (req, res) => {
   try {
     const new_user = new User(req.body);
     await new_user.save();
-    res.status(StatusCodes.CREATED).json(new_user);
+    return res.status(StatusCodes.CREATED).json(new_user);
   }
   catch (err) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
@@ -49,11 +49,11 @@ router.post(Endpoints.User.Create, async (req, res) => {
 router.get(Endpoints.User.GetAll, async (req, res) => {
   try {
     const users = await User.find();
-    res.json(users);
+    return res.json(users);
   }
   catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
@@ -94,11 +94,11 @@ router.patch(Endpoints.User.Update, _GetUserById, async (req, res) => {
 
   try {
     const updated_user = await res.user.save();
-    res.json(updatedUser);
+    return res.json(updatedUser);
   }
   catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
@@ -107,11 +107,11 @@ router.patch(Endpoints.User.Update, _GetUserById, async (req, res) => {
 router.delete(Endpoints.User.Delete, _GetUserById, async (req, res) => {
   try {
     await res.user.remove();
-    res.json({message: "User deleted"});
+    return res.json({message: "User deleted"});
   }
   catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
@@ -126,15 +126,15 @@ router.post(Endpoints.User.Login, async (req, res) => {
     }
     else if (user.password == req.body.password) {
       Debug.LogJson(user);
-      res.json(user);
+      return res.json(user);
     }
     else {
-      res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid Credentials"});
+      return res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid Credentials"});
     }
   }
   catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 
@@ -145,13 +145,13 @@ router.post(Endpoints.User.ToggleFollow, async (req, res) => {
 
     const user = await User.findById(req.body.userId);
     if (user == null) {
-      res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
+      return res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
       return;
     }
 
     const target = await User.findById(req.body.targetId);
     if (target == null) {
-      res.status(StatusCodes.NOT_FOUND).json({message: "Target not found"});
+      return res.status(StatusCodes.NOT_FOUND).json({message: "Target not found"});
       return;
     }
 
@@ -172,11 +172,11 @@ router.post(Endpoints.User.ToggleFollow, async (req, res) => {
     await user.save();
     await target.save();
 
-    res.status(StatusCodes.OK).json(result);
+    return res.status(StatusCodes.OK).json(result);
   }
   catch (err) {
     debugger;
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
 });
 

@@ -21,7 +21,7 @@ router.post(Endpoints.MoodboardLike.Toggle, async (req, res) => {
     //
     const moodboard = await Moodboard.findById(moodboardId);
     if(!moodboard) {
-      res
+      return res
         .status(StatusCodes.BAD_REQUEST)
         .json({message: "Invalid moodboard id"});
       return
@@ -29,7 +29,7 @@ router.post(Endpoints.MoodboardLike.Toggle, async (req, res) => {
 
     const owner = await User.findById(ownerId);
     if(!owner) {
-      res
+      return res
         .status(StatusCodes.BAD_REQUEST)
         .json({message: "Invalid Owner User id"});
       return
@@ -37,7 +37,7 @@ router.post(Endpoints.MoodboardLike.Toggle, async (req, res) => {
 
     const targetUser = await User.findById(ownerId);
     if(!targetUser) {
-      res
+      return res
         .status(StatusCodes.BAD_REQUEST)
         .json({message: "Invalid Target User id"});
         return
@@ -72,7 +72,7 @@ router.post(Endpoints.MoodboardLike.Toggle, async (req, res) => {
     result.likesCount = moodboard.likesCount;
     await moodboard.save();
 
-    res
+    return res
       .status(StatusCodes.OK)
       .json(result);
   }
@@ -91,9 +91,9 @@ router.get("/like", async (req, res) => {
 
     Debug.LogJson(like_items);
 
-    res.json(like_items);
+    return res.json(like_items);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 
@@ -113,9 +113,9 @@ router.get("/like/:userId", async (req, res) => {
     Debug.LogJson(likes);
     Debug.LogJson(moodboards);
 
-    res.json(moodboards);
+    return res.json(moodboards);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 });
 
