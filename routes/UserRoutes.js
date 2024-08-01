@@ -75,7 +75,7 @@ router.get(Endpoints.User.GetById, _GetUserById, (req, res) => {
 // -----------------------------------------------------------------------------
 // PATCH - Update a user by username
 router.patch(Endpoints.User.Update, _GetUserById, async (req, res) => {
-  
+
   if (req.body.profilePhotoUrl != null) {
     res.user.profilePhotoUrl = req.body.profilePhotoUrl;
   }
@@ -91,7 +91,7 @@ router.patch(Endpoints.User.Update, _GetUserById, async (req, res) => {
   if (req.body.password != null) {
     res.user.password = req.body.password;
   }
-  
+
   try {
     const updated_user = await res.user.save();
     res.json(updatedUser);
@@ -138,6 +138,49 @@ router.post(Endpoints.User.Login, async (req, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------
+// FOLLOW
+router.post(Endpoints.User.ToggleFollow, async (req, res) => {
+  try {
+
+    const user = await User.findById(req.body.userId);
+    if (user == null) {
+      res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
+      return;
+    }
+
+    const target = await User.findById(req.body.targetId);
+    if (target == null) {
+      res.status(StatusCodes.NOT_FOUND).json({message: "Target not found"});
+      return;
+    }
+
+    const result = { isFollowing: false };
+    if (!user.following.includes(target._id)) {
+      user.following.push(target._id);
+      target.followers.push(user._id);
+      result.isFollowing = true;
+      }
+      else {
+        user.following.pull(target._id);
+        target.followers.pull(user._id);
+        result.isFollowing = false;
+    }
+
+
+    // Save both user documents
+    await user.save();
+    await target.save();
+
+    res.status(StatusCodes.OK).json(result);
+  }
+  catch (err) {
+    debugger;
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+  }
+});
+
+
 //
 // Middleware
 //
@@ -146,7 +189,7 @@ router.post(Endpoints.User.Login, async (req, res) => {
 async function _GetUserByUsername(req, res, next)
 {
   let user;
-  
+
   try {
     user = await User.findOne({username: req.params.username});
     if (user == null) {
@@ -157,7 +200,7 @@ async function _GetUserByUsername(req, res, next)
     debugger;
     return res.status(Status.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
-  
+
   res.user = user;
   next();
 }
@@ -166,7 +209,7 @@ async function _GetUserByUsername(req, res, next)
 async function _GetUserById(req, res, next)
 {
   let user;
-  
+
   try {
     user = await User.findById(req.params.userId);
     if (user == null) {
@@ -177,7 +220,7 @@ async function _GetUserById(req, res, next)
     debugger;
     return res.status(Status.INTERNAL_SERVER_ERROR).json({message: err.message});
   }
-  
+
   res.user = user;
   next();
 }

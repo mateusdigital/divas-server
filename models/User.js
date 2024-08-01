@@ -45,7 +45,6 @@ const UserSchema = new mongoose.Schema({
   // Moodboards
   moodboards: [{ type: mongoose.Schema.Types.ObjectId, ref: "Moodboard" }], // List of moodboard of this user.
   collectionsCount: { type: Number, default: 0 },                           // How much collections this user has.
-
 });
 
 // -----------------------------------------------------------------------------
