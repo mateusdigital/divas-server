@@ -82,38 +82,31 @@ router.post(Endpoints.Moodboard.Create, async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// POST - Create a new Moodboard
+// POST - Save moodboard as draft
 router.post(Endpoints.Moodboard.SaveDraft, async (req, res) => {
   try {
-    const {info, items, user} = req.body;
+    const {info, items, user, fabric, photoUrl} = req.body;
 
-    const moodboard_items = [];
-    for (let item of items) {
-      moodboard_items.push(item.model);
-    }
+    const moodboard_object = {
+      owner: user._id,
+      title: info.title,
+      description: info.description,
+      photoUrl: photoUrl,
+      moodboardItems: items,
+      fabricItems: fabric,
+      isDraft: true
+    };
 
     let moodboard = null;
     if(info._id) {
       moodboard = await Moodboard.findByIdAndUpdate(
         info._id,
-        {
-          owner: user._id,
-          title: info.title,
-          description: info.description,
-          moodboardItems: moodboard_items,
-          isDraft: true
-        },
+        moodboard_object,
         { new: true, runValidators: true }
       );
     }
     else {
-      moodboard = await Moodboard.create({
-        owner:          user._id,
-        title:          info.title,
-        description:    info.description,
-        moodboardItems: moodboard_items,
-        isDraft:        true
-      });
+      moodboard = await Moodboard.create(moodboard_object);
     }
 
     await User.findByIdAndUpdate(
@@ -134,23 +127,47 @@ router.post(Endpoints.Moodboard.SaveDraft, async (req, res) => {
 });
 
 // -----------------------------------------------------------------------------
-// GET - Get all moodboards
-router.get(Endpoints.Moodboard.GetAll, async (req, res) => {
+router.delete(Endpoints.Moodboard.DeleteById, async (req, res) => {
+
   try {
+    const moodboardId = req.params.moodboardId;
+    if(!moodboardId) {
+      return res.status(StatusCodes.BAD_REQUEST).json({message: "Missing moodboardId"});
+    }
 
-    const owner = req.params.id;
-    const moodboards = await Moodboard.find({ owner });
-
-    Debug.LogJson(moodboards);
-
-    return res.json(moodboards);
+    const result = await Moodboard.deleteOne({ _id: moodboardId });
+    return res.status(StatusCodes.OK).json(result);
   }
   catch (error) {
     debugger;
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
   }
 });
+
+
 // -----------------------------------------------------------------------------
+// GET - Get all moodboards from a User
+router.get(Endpoints.Moodboard.GetAllFromUser, async (req, res) => {
+  try {
+    const owner = req.params.id;
+
+    const moodboards          = await Moodboard.find({ owner });
+    const filtered_moodboards = moodboards.filter((moodboard) => {
+      return !moodboard.isDraft;
+    })
+
+    Debug.LogJson(filtered_moodboards);
+
+    return res.json(filtered_moodboards);
+  }
+  catch (error) {
+    debugger;
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
+  }
+});
+
+// -----------------------------------------------------------------------------
+// GET - Get all moodboard that were liked by this user.
 router.get(Endpoints.Moodboard.GetLikedByUser, async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -173,6 +190,32 @@ router.get(Endpoints.Moodboard.GetLikedByUser, async (req, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------
+// GET - Get all the moodboards that are saved as draft by the user.
+router.get(Endpoints.Moodboard.GetUserDrafts, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const owner = await User.findById(userId).populate("moodboards");
+    if(!owner) {
+      return res.status(StatusCodes.BAD_REQUEST, `Invalid user with ${userId}`);
+      return;
+    }
+
+
+    const moodboards = owner.moodboards;
+    const filtered_moodboards = moodboards.filter((moodboard) =>{
+      return moodboard.isDraft;
+    });
+
+    Debug.LogJson(filtered_moodboards);
+    return res.json(filtered_moodboards);
+  }
+  catch (error) {
+    debugger;
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
+  }
+});
 
 // -----------------------------------------------------------------------------
 // GET - Get a specific moodboard by ID
@@ -212,6 +255,34 @@ router.post(Endpoints.Moodboard.GetMultiple, async (req, res) => {
   catch (error) {
     debugger;
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: error.message});
+  }
+});
+
+// -----------------------------------------------------------------------------
+// GET - Get Moodboard Edit Data
+router.get(Endpoints.Moodboard.GetEditData, async (req, res) => {
+  try {
+    const moodboard = await Moodboard
+      .findById(req.params.moodboardId)
+      .populate('moodboardItems')
+      .exec();
+
+    if (!moodboard) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({message: "Moodboard not found"});
+
+      return;
+    }
+
+    Debug.LogJson(moodboard);
+    return res.json(moodboard);
+  }
+  catch (error) {
+    debugger;
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({message: error.message});
   }
 });
 

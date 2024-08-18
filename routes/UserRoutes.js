@@ -79,22 +79,28 @@ router.patch(Endpoints.User.Update, _GetUserById, async (req, res) => {
   if (req.body.profilePhotoUrl != null) {
     res.user.profilePhotoUrl = req.body.profilePhotoUrl;
   }
-  if (req.body.fullname != null) {
-    res.user.fullname = req.body.fullname;
-  }
-  if (req.body.username != null) {
+
+  if (req.body.username) {
     res.user.username = req.body.username;
   }
-  if (req.body.description != null) {
+  if (req.body.email) {
+    res.user.email = req.body.email;
+  }
+
+  if (req.body.fullname) {
+    res.user.fullname = req.body.fullname;
+  }
+  if (req.body.description) {
     res.user.description = req.body.description;
   }
-  if (req.body.password != null) {
-    res.user.password = req.body.password;
+
+  if (req.body.newPassword) {
+    res.user.password = req.body.newPassword;
   }
 
   try {
     const updated_user = await res.user.save();
-    return res.json(updatedUser);
+    return res.json(updated_user);
   }
   catch (err) {
     debugger;
@@ -140,13 +146,44 @@ router.post(Endpoints.User.Login, async (req, res) => {
 
 // -----------------------------------------------------------------------------
 // FOLLOW
+
+router.get(Endpoints.User.GetFollowing, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (user == null) {
+      return res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
+    }
+    const following = await User.find({ _id: { $in: user.following } });
+    return res.status(StatusCodes.OK).json(following);
+  }
+  catch (err) {
+    debugger;
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+  }
+});
+
+// -----------------------------------------------------------------------------
+router.get(Endpoints.User.GetFollowers, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (user == null) {
+      return res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
+    }
+    const followers = await User.find({ _id: { $in: user.followers} });
+    return res.status(StatusCodes.OK).json(followers);
+  }
+  catch (err) {
+    debugger;
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err.message});
+  }
+});
+
+// -----------------------------------------------------------------------------
 router.post(Endpoints.User.ToggleFollow, async (req, res) => {
   try {
-
     const user = await User.findById(req.body.userId);
     if (user == null) {
       return res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
-      return;
     }
 
     const target = await User.findById(req.body.targetId);

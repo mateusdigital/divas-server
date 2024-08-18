@@ -271,8 +271,7 @@ function write_items_json_file(items)
 //
 
 // -----------------------------------------------------------------------------
-process_directory     (DATA_DIR_PATH);
-normalize_filenames   (ALL_CLOTHES_ITEMS)
-copy_items_local      (ALL_CLOTHES_ITEMS);
-write_sync_script_file(ALL_CLOTHES_ITEMS);
-write_items_json_file (ALL_CLOTHES_ITEMS);
+process_directory    (DATA_DIR_PATH);
+normalize_filenames  (ALL_CLOTHES_ITEMS)
+copy_items_local     (ALL_CLOTHES_ITEMS);
+write_items_json_file(ALL_CLOTHES_ITEMS);

@@ -1,19 +1,19 @@
 // -----------------------------------------------------------------------------
 const express = require("express");
-const router = express.Router();
-const formidable = require("formidable");
+const router  = express.Router();
+const formidable  = require("formidable");
 const StatusCodes = require("http-status-codes");
-const fs = require("fs");
+const fs   = require("fs");
 const path = require("path");
 // -----------------------------------------------------------------------------
 const PathUtils = require("../helpers/PathUtils");
-const FSUtils = require("../helpers/FSUtils");
+const FSUtils   = require("../helpers/FSUtils");
 const Endpoints = require("../divas-shared/shared/API/Endpoints");
 
-
 // -----------------------------------------------------------------------------
-const _USERS_UPLOAD_PATH = PathUtils.Join("upload", "users");
-const _MOODBOARD_UPLOAD_PATH = PathUtils.Join("upload", "moodboard");
+const _USERS_UPLOAD_PATH     = PathUtils.Join("data", "upload", "users");
+const _MOODBOARD_UPLOAD_PATH = PathUtils.Join("data", "upload", "moodboard");
+
 
 // -----------------------------------------------------------------------------
 /// @XXX: Find a place to save the photo.
@@ -24,8 +24,8 @@ function _GetUploadDir()
 }
 
 // -----------------------------------------------------------------------------
-// POST - Upload new MoodboardPhoto
-router.post(Endpoints.Moodboard.UploadMoodboardPhoto, async (req, res)=>{
+async function _UploadPhoto(req, res)
+{
   const form = new formidable.IncomingForm();
   form.parse(req, async (err, fields, files) => {
     if (err) {
@@ -55,6 +55,17 @@ router.post(Endpoints.Moodboard.UploadMoodboardPhoto, async (req, res)=>{
       photoPath: return_path
     });
   });
+}
+
+// -----------------------------------------------------------------------------
+// POST - Upload new MoodboardPhoto
+router.post(Endpoints.Moodboard.UploadMoodboardPhoto, async (req, res)=>{
+  return _UploadPhoto(req, res);
+});
+
+// -----------------------------------------------------------------------------
+router.post(Endpoints.Moodboard.UploadMoodboardPhotoDraft, async (req, res)=>{
+  return _UploadPhoto(req, res);
 });
 
 

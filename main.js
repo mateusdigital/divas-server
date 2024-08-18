@@ -52,7 +52,7 @@ app.use(express.json());
 
 // -----------------------------------------------------------------------------
 // Database
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(process.env.SERVER_MAIN_URI, {
   useNewUrlParser:    true,
   useUnifiedTopology: true,
 });

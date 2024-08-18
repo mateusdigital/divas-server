@@ -40,7 +40,8 @@ const moodboardSchema = new mongoose.Schema({
 
   // Items
   moodboardItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "MoodboardItem", }],
-  // required: true },
+
+  fabricItems: { type: mongoose.Schema.Types.Mixed, required: false },
 });
 
 // -----------------------------------------------------------------------------
