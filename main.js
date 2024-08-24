@@ -36,6 +36,7 @@ const moodboardItemRoutes    = require("./routes/MoodboardItemRoutes");
 const moodboardCommentRoutes = require("./routes/MoodboardCommentRoutes");
 const likeRoutes             = require("./routes/MoodboardLikeRoutes");
 const uploadRoutes           = require("./routes/UploadRoutes");
+const feedRoutes             = require("./routes/FeedRoutes");
 
 
 // -----------------------------------------------------------------------------
@@ -76,6 +77,7 @@ app.use("/", moodboardItemRoutes);
 app.use("/", moodboardCommentRoutes);
 app.use("/", likeRoutes);
 app.use("/", uploadRoutes);
+app.use("/", feedRoutes);
 app.use("/data", express.static(path.join(__dirname, "data")));
 app.use("/upload", express.static(path.join(__dirname, "upload")));
 

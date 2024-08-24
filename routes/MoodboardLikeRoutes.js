@@ -19,29 +19,27 @@ router.post(Endpoints.MoodboardLike.Toggle, async (req, res) => {
     const { ownerId, moodboardId, targetUserId, } = req.body;
 
     //
+    const ownerUser = await User.findById(ownerId);
+    if(!ownerUser) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({message: "Invalid Owner User id"});
+    }
+
+    const targetUser = await User.findById(targetUserId);
+    if(!targetUser) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({message: "Invalid Target User id"});
+    }
+
     const moodboard = await Moodboard.findById(moodboardId);
     if(!moodboard) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({message: "Invalid moodboard id"});
-      return
     }
 
-    const owner = await User.findById(ownerId);
-    if(!owner) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({message: "Invalid Owner User id"});
-      return
-    }
-
-    const targetUser = await User.findById(ownerId);
-    if(!targetUser) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({message: "Invalid Target User id"});
-        return
-    }
 
     //
     const existing_like = await MoodboardLike.findOne({
@@ -53,25 +51,34 @@ router.post(Endpoints.MoodboardLike.Toggle, async (req, res) => {
 
     if (existing_like) {
       await MoodboardLike.deleteOne({ _id: existing_like._id });
-      moodboard.likesCount -= 1;
-      result.isLiked = false;
+
+      moodboard.likesCount  = Math.max((moodboard.likesCount  -1), 0);
+      targetUser.likesCount = Math.max((targetUser.likesCount -1), 0);
+
+      result.likesCount = moodboard.likesCount;
+      result.isLiked    = false;
     }
     else {
       const newLike = new MoodboardLike({
-        owner: owner,
+        owner: ownerUser,
         targetMoodboard: moodboard,
         targetUser: targetUser
       });
 
       await newLike.save();
 
-      moodboard.likesCount += 1;
-      result.isLiked = true;
+      moodboard.likesCount  += 1;
+      targetUser.likesCount += 1;
+
+      result.likesCount = moodboard.likesCount;
+      result.isLiked    = true;
     }
 
-    result.likesCount = moodboard.likesCount;
     await moodboard.save();
+    await targetUser.save();
 
+    //
+    //
     return res
       .status(StatusCodes.OK)
       .json(result);
